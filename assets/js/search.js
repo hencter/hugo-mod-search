@@ -1,6 +1,6 @@
 // @license magnet:?xt=urn:btih:1f739d935676111cfff4b4693e3816e664797050&dn=gpl-3.0.txt GPL-v3-or-Later
 // How many characters to include on either side of match keyword
-const summaryInclude=60;
+const summaryInclude = 60;
 
 // Options for fuse.js
 let fuseOptions = {
@@ -14,10 +14,10 @@ let fuseOptions = {
   maxPatternLength: 64,
   minMatchCharLength: 3,
   keys: [
-    {name:"title",weight:0.8},
-    {name:"tags",weight:0.5},
-    {name:"categories",weight:0.5},
-    {name:"contents",weight:0.4}
+    { name: "title", weight: 0.8 },
+    { name: "tags", weight: 0.5 },
+    { name: "categories", weight: 0.5 },
+    { name: "contents", weight: 0.4 }
   ]
 };
 
@@ -30,42 +30,45 @@ function getUrlParameter(name) {
 
 let searchQuery = getUrlParameter('q');
 
-if(searchQuery){
+if (searchQuery) {
   document.getElementById("search-query").value = searchQuery;
   executeSearch(searchQuery);
 } else {
-  document.getElementById('search-results').innerHTML = "<p class=\"no-results\"></p>";
+  // 我不想要全站进行搜索所以我放弃
+  if (document.URL.match("/.*search.*/")) {
+    document.getElementById('search-results').innerHTML = "<p class=\"no-results\"></p>";
+  }
 }
 
 function executeSearch(searchQuery) {
   // Look for "index.json" in the same directory where this script is called.
   fetch("index.json").
-  then(function (response) {
-    return response.json()
-  }).
-  then(function (data) {
-    let fuse = new Fuse(data, fuseOptions);
-    let result = fuse.search(searchQuery);
-    if (result.length > 0) {
-      populateResults(result);
-    } else {
-      document.getElementById('search-results').innerHTML = "<p class=\"no-results\">No matches found</p>";
-    }
-  });
+    then(function (response) {
+      return response.json()
+    }).
+    then(function (data) {
+      let fuse = new Fuse(data, fuseOptions);
+      let result = fuse.search(searchQuery);
+      if (result.length > 0) {
+        populateResults(result);
+      } else {
+        document.getElementById('search-results').innerHTML = "<p class=\"no-results\">No matches found</p>";
+      }
+    });
 }
 
-function populateResults(result){
-  result.forEach( function (value, key) {
-    let contents= value.item.contents;
+function populateResults(result) {
+  result.forEach(function (value, key) {
+    let contents = value.item.contents;
     let snippet = "";
-    let snippetHighlights=[];
+    let snippetHighlights = [];
     snippetHighlights.push(searchQuery);
-    if(snippet.length<1){
+    if (snippet.length < 1) {
       var getSentenceByWordRegex = new RegExp(
         `[^.?!]*(?<=[.?\\s!])${searchQuery}(?=[\\s.?!])[^.?!]*[.?!]`,
         'i'
       );
-      var maxTextLength = summaryInclude*2
+      var maxTextLength = summaryInclude * 2
       // Index of the matched search term
       var indexOfMatch = contents.toLowerCase().indexOf(
         searchQuery.toLowerCase()
@@ -78,7 +81,7 @@ function populateResults(result){
       var start
       var cutStart = false
       // Is the match in the result?
-      if(indexOfSentence+maxTextLength < indexOfMatch){
+      if (indexOfSentence + maxTextLength < indexOfMatch) {
         // Make sure that the match is in the result
         start = indexOfMatch
         // This bool is used to replace the first part with '...'
@@ -91,16 +94,16 @@ function populateResults(result){
       // Change end length to the text length if it is longer than
       // the text length to prevent problems
       var end = start + maxTextLength
-      if (end > contents.length){
+      if (end > contents.length) {
         end = contents.length
       }
 
-      if(cutStart){
+      if (cutStart) {
         // Replace first three characters with '...'
         end -= 3;
         snippet += "…" + contents.substring(start, end).trim();
       }
-      else{
+      else {
         snippet += contents.substring(start, end).trim();
       }
     }
@@ -130,7 +133,7 @@ function populateResults(result){
     } else {
       frag.querySelector(".search_ifcategories").remove();
     }
-    snippetHighlights.forEach( function (snipvalue, snipkey) {
+    snippetHighlights.forEach(function (snipvalue, snipkey) {
       let markjs = new Mark(frag);
       markjs.mark(snipvalue);
     });
