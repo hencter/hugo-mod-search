@@ -1,4 +1,4 @@
-module github.com/kaushalmodi/hugo-search-fuse-js
+module github.com/hencter/hugo-mod-search
 
 go 1.16
 
