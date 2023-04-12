@@ -10,7 +10,7 @@ To use this component,
     ```toml
     [module]
       [[module.imports]]
-        path = "github.com/kaushalmodi/hugo-search-fuse-js"
+        path = "github.com/hugo-mod-search"
     ```
 
 2.  Run `hugo mod tidy` in your main site directory.  The main site
